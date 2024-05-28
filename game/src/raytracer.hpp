@@ -4,16 +4,10 @@
 
 #include <stdint.h>
 #include <iostream>
+#include "color.hpp"
+#include "vec3.hpp"
 
 namespace render {
-
-template <typename T>
-struct color {
-    T r;
-    T g;
-    T b;
-    T a;
-};
 
 struct frame_t {
     int w;
