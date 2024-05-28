@@ -81,7 +81,7 @@ public:
         
         DrawTexture(tex_, 0, 0, {255, 255, 255, 255});
         
-        DrawText("Render...", 200,200,20,WHITE);
+        DrawText("Render...", 25, 25, 20, WHITE);
     }
 
     void configure() {

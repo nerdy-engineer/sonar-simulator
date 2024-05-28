@@ -33,15 +33,15 @@ public:
             return false;
         }
         double r, g, b;
-        for (int y=0; y < frame.w; y++) {
-            for (int x=0; x < frame.h; x++) {
+        for (int x=0; x < frame.w; x++) {
+            for (int y=0; y < frame.h; y++) {
                 r = double(y) / (frame.w - 1);
                 g = double(x) / (frame.h - 1);
                 b = 0;
                 auto ray = cam.get_ray(x, y);
                 auto c = ray_color(ray);
                 // frame.pixels[x*frame.w + y] = {uint8_t(r*255.999), uint8_t(g*255.999), uint8_t(0*255.999), 255};
-                frame.pixels[x*frame.w + y] = {uint8_t(c.r*255.999), uint8_t(c.g*255.999), uint8_t(c.b*255.999), uint8_t(c.a*255.999)};
+                frame.pixels[y*frame.w + x] = {uint8_t(c.r*255.999), uint8_t(c.g*255.999), uint8_t(c.b*255.999), uint8_t(c.a*255.999)};
             }
         }
         return true;

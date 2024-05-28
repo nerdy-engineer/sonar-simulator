@@ -24,7 +24,7 @@ public:
     void set_resolution(std::pair<int, int> res) {
         resolution_ = res;
         auto vpu = vec3(res.first, 0, 0);
-        auto vpv = vec3(0, res.second, 0);
+        auto vpv = vec3(0, -res.second, 0);
 
         pixel_du = vpu/res.first;
         pixel_dv = vpv/res.second;
