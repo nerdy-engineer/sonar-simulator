@@ -24,7 +24,7 @@ public:
         app_state_{State::RENDER},
         window_size_{window_size},
         pixels{nullptr},
-        render_engine{{window_size.first, window_size.second, (render::color<uint8_t>*)pixels}},
+        render_engine{{window_size.first, window_size.second, (render::color4<uint8_t>*)pixels}},
         img_{},
         tex_{}
     {
@@ -97,7 +97,7 @@ public:
             // This is a problem...
             throw std::exception();
         }
-        render_engine.resize({window_size.first, window_size.second, (render::color<uint8_t>*)pixels});
+        render_engine.resize({window_size.first, window_size.second, (render::color4<uint8_t>*)pixels});
         img_.data = pixels;
         img_.width = window_size.first;
         img_.height = window_size.second;
