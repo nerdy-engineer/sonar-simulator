@@ -16,7 +16,9 @@ This is a support project for Project Nighthawk (a sonar rangefinder I'm working
    - Sonar through dirt
    - Sonar through concrete/rock?
 
-
+# References
+[Raytracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
+[Raylib Examples](https://www.raylib.com/examples.html)
 
 
 # Tools Used
