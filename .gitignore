@@ -6,6 +6,5 @@ _bin
 /build
 Makefile
 obj
-*premake*
 .vscode
 extras/
