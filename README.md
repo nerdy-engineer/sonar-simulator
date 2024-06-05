@@ -1,6 +1,6 @@
 # Sonar Simulator
 ## Purpose
-This is a support project for Project Nighthawk (a sonar rangefinder I'm working on). I need to generate sonar waveforms for testing purposes.
+This is a support project for Project Nightwatch (a sonar rangefinder I'm working on). I need to generate sonar waveforms for testing purposes.
 
 ## Plans
 1. Raytrace a scene using light physics
