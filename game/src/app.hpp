@@ -59,7 +59,8 @@ public:
                 break;
             case State::RENDER:
                 render();
-                DrawText("Render...", 25, 25, 20, WHITE);
+                DrawText("Render...", 20, 20, 20, WHITE);
+                DrawFPS(20, 45);
                 break;
         }
 		

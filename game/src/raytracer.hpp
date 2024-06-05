@@ -24,7 +24,7 @@ class Raytracer {
 public:
     Raytracer(frame_t frame_description) :
         frame{frame_description},
-        cam{1, {frame.w, frame.h}, 4.0, {0, 0, 0}}
+        cam{1, {frame.w, frame.h}, 2.8, {0, 0, 0}}
     {
         resize(frame);
     }
@@ -49,8 +49,11 @@ public:
     }
 
     color4<double> ray_color(const ray& r) {
-        if (hit::hit_sphere({0, 0, -1}, 0.5, r)) {
-            return {1.0, 0, 0, 1.0};
+        auto t = hit::hit_sphere(point3(0, 0, -1), 0.5, r);
+        if (t > 0.0) {
+            vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
+            return promote(0.5*color3<double>{N.x() + 1, N.y() + 1, N.z() + 1});
+            // return {t/2.0, t/2.0, t/2.0, 1.0};
         }
 
 

@@ -7,13 +7,20 @@
 namespace render {
 namespace hit {
 
-bool hit_sphere(const point3& center, double radius, const ray& r) {
+double hit_sphere(const point3& center, double radius, const ray& r) {
     vec3 oc = center - r.origin();
     auto a = dot(r.direction(), r.direction());
     auto b = -2.0 * dot(r.direction(), oc);
     auto c = dot(oc, oc) - radius * radius;
     auto discriminant = b*b - 4*a*c;
-    return (discriminant >= 0);
+
+    if (discriminant < 0) {
+        return -1.0;
+    } else {
+        return (-b - sqrt(discriminant)) / (2.0*a);
+    }
+
+    // return (discriminant >= 0);
 }
 
 
