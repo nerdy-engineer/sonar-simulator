@@ -8,6 +8,7 @@
 #include "vec3.hpp"
 #include "ray.hpp"
 #include "camera.hpp"
+#include "primitives.hpp"
 
 
 namespace render {
@@ -23,7 +24,7 @@ class Raytracer {
 public:
     Raytracer(frame_t frame_description) :
         frame{frame_description},
-        cam{1, {frame.w, frame.h}, {0, 0, 0}}
+        cam{1, {frame.w, frame.h}, 4.0, {0, 0, 0}}
     {
         resize(frame);
     }
@@ -35,9 +36,9 @@ public:
         double r, g, b;
         for (int x=0; x < frame.w; x++) {
             for (int y=0; y < frame.h; y++) {
-                r = double(y) / (frame.w - 1);
-                g = double(x) / (frame.h - 1);
-                b = 0;
+                // r = double(y) / (frame.w - 1);
+                // g = double(x) / (frame.h - 1);
+                // b = 0;
                 auto ray = cam.get_ray(x, y);
                 auto c = ray_color(ray);
                 // frame.pixels[x*frame.w + y] = {uint8_t(r*255.999), uint8_t(g*255.999), uint8_t(0*255.999), 255};
@@ -48,6 +49,11 @@ public:
     }
 
     color4<double> ray_color(const ray& r) {
+        if (hit::hit_sphere({0, 0, -1}, 0.5, r)) {
+            return {1.0, 0, 0, 1.0};
+        }
+
+
         vec3 unit_direction = unit_vector(r.direction());
         auto a = 0.5*(unit_direction.y() + 1.0);
         return promote((1.0-a)*color3<double>{1.0, 1.0, 1.0} + a*color3<double>{0.5, 0.7, 1.0});

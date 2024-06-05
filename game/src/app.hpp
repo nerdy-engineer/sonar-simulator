@@ -51,12 +51,15 @@ public:
                 break;
             case State::LOADING:
                 loading();
+                DrawText("Loading...", 200,200,20,WHITE);
                 break;
             case State::PREVIEW:
                 loading();
+                DrawText("Preview...", 200,200,20,WHITE);
                 break;
             case State::RENDER:
                 render();
+                DrawText("Render...", 25, 25, 20, WHITE);
                 break;
         }
 		
@@ -65,12 +68,10 @@ public:
 
     void loading() {
 		ClearBackground(BLACK);
-        DrawText("Loading...", 200,200,20,WHITE);
     }
 
     void preview() {
         ClearBackground(BLACK);
-        DrawText("Preview...", 200,200,20,WHITE);
     }
 
     void render() {
@@ -81,7 +82,6 @@ public:
         
         DrawTexture(tex_, 0, 0, {255, 255, 255, 255});
         
-        DrawText("Render...", 25, 25, 20, WHITE);
     }
 
     void configure() {
