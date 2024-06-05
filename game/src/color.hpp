@@ -1,6 +1,6 @@
 #pragma once
-#ifndef COLOR_H
-#define COLOR_H
+#ifndef COLOR_HPP
+#define COLOR_HPP
 
 #include "vec3.hpp"
 #include <limits>
@@ -29,10 +29,9 @@ color3<T> operator*(vec3 first, color3<T> c) {
 }
 
 template <typename T>
-color3<T> operator*(color3<T> c, vec3 first) {
-    return c*first;
+color3<T> operator*(color3<T> c, vec3 second) {
+    return second*c;
 }
-
 
 template <typename T>
 color3<T> operator*(color3<T> c1, color3<T> c2) {
@@ -53,6 +52,17 @@ template <typename T>
 color3<T> operator+(color3<T> a, color3<T> b) {
     return {a.r + b.r, a.g+b.g, a.b+b.b};
 }
+
+template <typename T>
+color3<T> operator+(vec3 a, color3<T> b) {
+    return {a.x() + b.r, a.y() + b.g, a.z() + b.b};
+}
+
+template <typename T>
+color3<T> operator+(color3<T> b, vec3 a) {
+    return {a.x() + b.r, a.y() + b.g, a.z() + b.b};
+}
+
 
 color4<double> promote(color3<double> a) {
     return {a.r, a.g, a.b, 1.0};
