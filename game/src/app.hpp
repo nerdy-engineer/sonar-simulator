@@ -107,7 +107,8 @@ public:
             // This is a problem...
             throw std::exception();
         }
-        render_engine.resize({window_size.first, window_size.second, (render::color4<uint8_t>*)pixels});
+        frame_t frame = {window_size.first, window_size.second, (render::color4<uint8_t>*)pixels};
+        render_engine.resize(frame);
         img_.data = pixels;
         img_.width = window_size.first;
         img_.height = window_size.second;

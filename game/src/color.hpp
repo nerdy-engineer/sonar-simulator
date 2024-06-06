@@ -73,6 +73,17 @@ color4<T> promote(color3<T> a) {
     return {a.r, a.g, a.b, std::numeric_limits<T>::max()};
 }
 
+template <typename T>
+color3<uint8_t> quantize(color3<T> c) {
+    return {uint8_t(255.9999*c.r), uint8_t(255.9999*c.g), uint8_t(255.9999*c.b)};
+}
+
+template <typename T>
+color4<uint8_t> quantize(color4<T> c) {
+    return {uint8_t(255.9999*c.r), uint8_t(255.9999*c.g), uint8_t(255.9999*c.b), uint8_t(255.9999*c.a)};
+}
+
+
 }
 
 #endif

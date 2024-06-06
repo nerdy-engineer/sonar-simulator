@@ -18,7 +18,7 @@ public:
 
     }
 
-    bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const override {
+    bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
         vec3 oc = m_center - r.origin();
         auto a = r.direction().length_squared();
         auto h = dot(r.direction(), oc);
@@ -31,9 +31,9 @@ public:
         auto sqrtd = sqrt(discriminant);
         auto root = (h - sqrtd) / a;
 
-        if (root <= ray_tmin || ray_tmax <= root) {
+        if (!ray_t.surrounds(root)) {
             root = (h + sqrtd) / a;
-            if (root <= ray_tmin || ray_tmax <= root) {
+            if (!ray_t.surrounds(root)) {
                 return false;
             }
         }
