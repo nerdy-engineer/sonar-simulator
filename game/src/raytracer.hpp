@@ -4,12 +4,9 @@
 
 #include <stdint.h>
 #include <iostream>
-#include "color.hpp"
-#include "vec3.hpp"
-#include "ray.hpp"
+#include "utilities.hpp"
 #include "camera.hpp"
 #include "primitives.hpp"
-#include "utilities.hpp"
 #include "hittable.hpp"
 #include "hittable_list.hpp"
 #include "camera.hpp"
@@ -23,7 +20,7 @@ public:
     Raytracer(frame_t frame_description) :
     // Raytracer(frame_t frame_description) :
         m_frame{frame_description},
-        m_cam{1, {m_frame.w, m_frame.h}, 2.8, {0, 0, 0}},
+        m_cam{1, m_frame, 2.8, {0, 0, 0}},
         m_world{nullptr}
     {
         resize(m_frame);

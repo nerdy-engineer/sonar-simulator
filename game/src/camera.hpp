@@ -4,8 +4,6 @@
 
 #include <cmath>
 #include <utility>
-#include "vec3.hpp"
-#include "ray.hpp"
 #include "utilities.hpp"
 #include "hittable.hpp"
 
@@ -13,7 +11,7 @@ namespace render {
 
 class Camera {
 public:
-    Camera(double focal_length, frame_t frame, double sensor_size, point3 origin) :
+    Camera(double focal_length, frame_t frame, double sensor_size, point3 origin, uint8_t samples_per_pixel=10) :
         focal_length_{focal_length},
         frame_{},
         size_{sensor_size},
@@ -21,7 +19,8 @@ public:
         center_pixel{},
         pixel_00{},
         pixel_du{},
-        pixel_dv{}
+        pixel_dv{},
+        aa_samples{samples_per_pixel}
     {
         // Sensor size is the diagonal size of the sensor receptive area
         set_resolution(frame);
@@ -52,20 +51,28 @@ public:
 
 
     ray get_ray(int x, int y) {     // Gets the ray corresponding to an x,y coordinate as you'd use for a rectangular camera
-        auto pixel_center = x * pixel_du + y * pixel_dv + center_pixel;
-        return ray(origin_, pixel_center);
+        auto offset = sample_square();
+        auto pixel_center = (x + offset.x()) * pixel_du + (y + offset.y()) * pixel_dv + center_pixel;
+
+        auto ray_origin = origin_;
+        auto ray_direction = pixel_center - ray_origin;
+        return ray(origin_, ray_direction);
+    }
+
+    vec3 sample_square() const {
+        return vec3(random_double() - 0.5, random_double() - 0.5, 0);
     }
 
     bool render(const hittable& world) {
         if (initialize()) {
             for (int j = 0; j < frame_.h; j++) {
                 for (int i = 0; i < frame_.w; i++) {
-                    auto pixel_center = pixel_00 + (i * pixel_du) + (j * pixel_dv);
-                    auto ray_direction = pixel_center - origin_;
-                    ray r(origin_, ray_direction);
-
-                    auto p_color = ray_color(r, world);
-                    frame_.pixels[j*frame_.w + i] = quantize(p_color);
+                    color4<double> p_color{0, 0, 0};
+                    for (uint8_t sample = 0; sample < aa_samples; sample++){
+                        auto r = get_ray(i, j);
+                        p_color += ray_color(r, world);
+                    }
+                    frame_.pixels[j*frame_.w + i] = quantize(p_color/aa_samples);
                 }
             }
             return true;
@@ -76,6 +83,7 @@ public:
 private:
     bool initialize() {
         if (frame_.pixels == nullptr) {
+            std::cout << "[DEBUG] Error: Frame buffer is nullptr\n";
             return false;
         }
 
@@ -103,7 +111,7 @@ private:
     point3 pixel_00;
     vec3 pixel_du;
     vec3 pixel_dv;
-
+    uint8_t aa_samples;
 
 };
 

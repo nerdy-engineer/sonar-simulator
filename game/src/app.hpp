@@ -85,7 +85,7 @@ public:
     }
 
     void render() {
-        // ClearBackground(WHITE);
+        ClearBackground(BLACK);
         render_engine.render();
         
         UpdateTexture(tex_, img_.data);

@@ -3,6 +3,7 @@
 #define COLOR_HPP
 
 #include "vec3.hpp"
+#include "interval.hpp"
 #include <limits>
 
 
@@ -49,8 +50,40 @@ color3<T> operator*(color3<T> c, A first) {
 }
 
 template <typename T>
+color3<T> operator/(color3<T> a, double divisor) {
+    return {a.r/divisor, a.g/divisor, a.b/divisor};
+}
+
+template <typename T>
+color4<T> operator/(color4<T> a, double divisor) {
+    return {a.r/divisor, a.g/divisor, a.b/divisor, a.a/divisor};
+}
+
+template <typename T>
 color3<T> operator+(color3<T> a, color3<T> b) {
-    return {a.r + b.r, a.g+b.g, a.b+b.b};
+    return {a.r + b.r, a.g + b.g, a.b + b.b};
+}
+
+template <typename T>
+color3<T>& operator+=(color3<T>& lhs, const color3<T>& rhs) {
+    lhs.r += rhs.r;
+    lhs.g += rhs.g;
+    lhs.b += rhs.b;    
+    return lhs;
+}
+
+template <typename T>
+color4<T> operator+(color4<T> a, color4<T> b) {
+    return {a.r + b.r, a.g + b.g, a.b + b.b, a.a + b.a};
+}
+
+template <typename T>
+color4<T>& operator+=(color4<T>& lhs, const color4<T>& rhs) {
+    lhs.r += rhs.r;
+    lhs.g += rhs.g;
+    lhs.b += rhs.b; 
+    lhs.a += rhs.a;
+    return lhs;
 }
 
 template <typename T>
@@ -62,7 +95,6 @@ template <typename T>
 color3<T> operator+(color3<T> b, vec3 a) {
     return {a.x() + b.r, a.y() + b.g, a.z() + b.b};
 }
-
 
 color4<double> promote(color3<double> a) {
     return {a.r, a.g, a.b, 1.0};
