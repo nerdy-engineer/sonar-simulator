@@ -49,6 +49,18 @@ color3<T> operator*(color3<T> c, A first) {
     return first*c;
 }
 
+
+template <typename A, typename T>
+color4<T> operator*(A first, color4<T> c) {
+    return {first*c.r, first*c.g, first*c.b, first*c.a};
+}
+
+template <typename A, typename T>
+color4<T> operator*(color4<T> c, A first) {
+    return first*c;
+}
+
+
 template <typename T>
 color3<T> operator/(color3<T> a, double divisor) {
     return {a.r/divisor, a.g/divisor, a.b/divisor};

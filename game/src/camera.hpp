@@ -11,7 +11,7 @@ namespace render {
 
 class Camera {
 public:
-    Camera(double focal_length, frame_t frame, double sensor_size, point3 origin, uint8_t samples_per_pixel=10) :
+    Camera(double focal_length, frame_t frame, double sensor_size, point3 origin, uint8_t samples_per_pixel=10, uint16_t bounce_limit=4) :
         focal_length_{focal_length},
         frame_{},
         size_{sensor_size},
@@ -20,7 +20,8 @@ public:
         pixel_00{},
         pixel_du{},
         pixel_dv{},
-        aa_samples{samples_per_pixel}
+        aa_samples{samples_per_pixel},
+        bounces{bounce_limit}
     {
         // Sensor size is the diagonal size of the sensor receptive area
         set_resolution(frame);
@@ -70,7 +71,7 @@ public:
                     color4<double> p_color{0, 0, 0};
                     for (uint8_t sample = 0; sample < aa_samples; sample++){
                         auto r = get_ray(i, j);
-                        p_color += ray_color(r, world);
+                        p_color += ray_color(r, bounces, world);
                     }
                     frame_.pixels[j*frame_.w + i] = quantize(p_color/aa_samples);
                 }
@@ -91,10 +92,16 @@ private:
     }
 
 
-    color4<double> ray_color(const ray& r, const hittable& world) const {
+    color4<double> ray_color(const ray& r, uint16_t depth, const hittable& world) const {
+        if (depth <= 0) {
+            return promote({0, 0, 0});
+        }
+
         hit_record rec;
+        
         if (world.hit(r, interval(0, infinity), rec)) {
-            return promote(0.5*(rec.normal + color3<double>{1, 1, 1}));
+            auto direction = random_on_hemisphere(rec.normal);
+            return 0.5 * ray_color(ray(rec.p, direction), depth-1, world);
         }
         
         vec3 unit_direction = unit_vector(r.direction());
@@ -112,6 +119,7 @@ private:
     vec3 pixel_du;
     vec3 pixel_dv;
     uint8_t aa_samples;
+    uint16_t bounces;
 
 };
 
