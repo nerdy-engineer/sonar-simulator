@@ -6,6 +6,9 @@
 #include <utility>
 #include <string>
 #include "raytracer.hpp"
+#include "hittable_list.hpp"
+#include "primitives.hpp"
+#include "vec3.hpp"
 #include <exception>
 #include <stdint.h>
 #include <iostream>
@@ -24,6 +27,7 @@ public:
         app_state_{State::RENDER},
         window_size_{window_size},
         pixels{nullptr},
+        m_world{},
         render_engine{{window_size.first, window_size.second, (render::color4<uint8_t>*)pixels}},
         img_{},
         tex_{}
@@ -32,6 +36,11 @@ public:
         resize(window_size_);
         for (uint32_t i = 0; i < img_.width * img_.height; i++) { pixels[i] = {255, 255, 255, 255}; }
         tex_ = LoadTextureFromImage(img_);
+        
+        m_world.add(std::make_shared<render::primitives::sphere>(render::point3(0, 0, -1), 0.5));
+        m_world.add(std::make_shared<render::primitives::sphere>(render::point3(0, -100.5, -1), 100));
+
+        render_engine.add_world(std::make_shared<render::hit::hittable_list>(m_world));
     }
 
     void state(State new_state) {
@@ -51,12 +60,16 @@ public:
                 break;
             case State::LOADING:
                 loading();
+                DrawText("Loading...", 200,200,20,WHITE);
                 break;
             case State::PREVIEW:
                 loading();
+                DrawText("Preview...", 200,200,20,WHITE);
                 break;
             case State::RENDER:
                 render();
+                DrawText("Render...", 20, 20, 20, WHITE);
+                DrawFPS(20, 45);
                 break;
         }
 		
@@ -65,23 +78,20 @@ public:
 
     void loading() {
 		ClearBackground(BLACK);
-        DrawText("Loading...", 200,200,20,WHITE);
     }
 
     void preview() {
         ClearBackground(BLACK);
-        DrawText("Preview...", 200,200,20,WHITE);
     }
 
     void render() {
-        // ClearBackground(WHITE);
+        ClearBackground(BLACK);
         render_engine.render();
         
         UpdateTexture(tex_, img_.data);
         
         DrawTexture(tex_, 0, 0, {255, 255, 255, 255});
         
-        DrawText("Render...", 25, 25, 20, WHITE);
     }
 
     void configure() {
@@ -97,7 +107,8 @@ public:
             // This is a problem...
             throw std::exception();
         }
-        render_engine.resize({window_size.first, window_size.second, (render::color4<uint8_t>*)pixels});
+        frame_t frame = {window_size.first, window_size.second, (render::color4<uint8_t>*)pixels};
+        render_engine.resize(frame);
         img_.data = pixels;
         img_.width = window_size.first;
         img_.height = window_size.second;
@@ -118,7 +129,7 @@ private:
     render::Raytracer render_engine;
     Image img_;
     Texture2D tex_;
-
+    render::hit::hittable_list m_world;
 
 
 
