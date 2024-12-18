@@ -1,0 +1,3 @@
+[submodule "game/inc/picojson"]
+	path = game/inc/picojson
+	url = https://github.com/kazuho/picojson.git

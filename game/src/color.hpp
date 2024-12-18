@@ -36,7 +36,24 @@ color3<T> operator*(color3<T> c, vec3 second) {
 
 template <typename T>
 color3<T> operator*(color3<T> c1, color3<T> c2) {
-    return {c1.r+c2.r, c1.g+c2.g, c1.b+c2.b};
+    return {c1.r*c2.r, c1.g*c2.g, c1.b*c2.b};
+}
+
+template <typename T>
+color4<T> operator*(color4<T> c1, color4<T> c2) {
+    return {c1.r*c2.r, c1.g*c2.g, c1.b*c2.b, c1.a*c2.a};
+}
+
+template <typename T>
+color3<T>& operator*=(color3<T>& lhs, const color3<T> rhs) {
+    lhs = lhs * rhs;
+    return lhs;
+}
+
+template <typename T>
+color4<T>& operator*=(color4<T>& lhs, const color4<T> rhs) {
+    lhs = lhs * rhs;
+    return lhs;
 }
 
 template <typename A, typename T>
@@ -50,14 +67,9 @@ color3<T> operator*(color3<T> c, A first) {
 }
 
 
-template <typename A, typename T>
-color4<T> operator*(A first, color4<T> c) {
+template <typename T>
+color4<T> operator*(double first, color4<T> c) {
     return {first*c.r, first*c.g, first*c.b, first*c.a};
-}
-
-template <typename A, typename T>
-color4<T> operator*(color4<T> c, A first) {
-    return first*c;
 }
 
 

@@ -9,6 +9,7 @@
 #include "primitives.hpp"
 #include "hittable.hpp"
 #include "hittable_list.hpp"
+#include "world.hpp"
 #include "camera.hpp"
 
 
@@ -26,8 +27,8 @@ public:
         resize(m_frame);
     }
 
-    void add_world(std::shared_ptr<hit::hittable_list> world) {
-        m_world = world;
+    void add_world(std::shared_ptr<world> hittable_world) {
+        m_world = hittable_world;
     }
 
     bool render() {
@@ -42,7 +43,7 @@ public:
 private:
     frame_t m_frame;
     Camera m_cam;
-    std::shared_ptr<hit::hittable_list> m_world;
+    std::shared_ptr<world> m_world;
     
 
 };

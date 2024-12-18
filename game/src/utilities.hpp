@@ -41,6 +41,8 @@ inline double random_double(double min, double max) {
 struct frame_t {
     int w;
     int h;
+    double sample_rate;
+    double max_range;
     render::color4<uint8_t>* pixels;
 };
 

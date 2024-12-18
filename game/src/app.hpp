@@ -6,7 +6,7 @@
 #include <utility>
 #include <string>
 #include "raytracer.hpp"
-#include "hittable_list.hpp"
+#include "world.hpp"
 #include "primitives.hpp"
 #include "vec3.hpp"
 #include <exception>
@@ -24,11 +24,11 @@ public:
     };
 
     App(std::pair<int, int> window_size, std::string window_caption) :
-        app_state_{State::RENDER},
+        app_state_{State::PREVIEW},
         window_size_{window_size},
         pixels{nullptr},
         m_world{},
-        render_engine{{window_size.first, window_size.second, (render::color4<uint8_t>*)pixels}},
+        render_engine{{window_size.first, window_size.second, 1e6, 18, (render::color4<uint8_t>*)pixels}},
         img_{},
         tex_{}
     {
@@ -40,7 +40,7 @@ public:
         m_world.add(std::make_shared<render::primitives::sphere>(render::point3(0, 0, -1), 0.5));
         m_world.add(std::make_shared<render::primitives::sphere>(render::point3(0, -100.5, -1), 100));
 
-        render_engine.add_world(std::make_shared<render::hit::hittable_list>(m_world));
+        render_engine.add_world(std::make_shared<world>(m_world));
     }
 
     void state(State new_state) {
@@ -107,7 +107,7 @@ public:
             // This is a problem...
             throw std::exception();
         }
-        frame_t frame = {window_size.first, window_size.second, (render::color4<uint8_t>*)pixels};
+        frame_t frame = {window_size.first, window_size.second, 1e6, 18, (render::color4<uint8_t>*)pixels};
         render_engine.resize(frame);
         img_.data = pixels;
         img_.width = window_size.first;
@@ -129,7 +129,7 @@ private:
     render::Raytracer render_engine;
     Image img_;
     Texture2D tex_;
-    render::hit::hittable_list m_world;
+    world m_world;
 
 
 

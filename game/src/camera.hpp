@@ -6,6 +6,7 @@
 #include <utility>
 #include "utilities.hpp"
 #include "hittable.hpp"
+#include "world.hpp"
 
 namespace render {
 
@@ -14,6 +15,7 @@ public:
     Camera(double focal_length, frame_t frame, double sensor_size, point3 origin, uint8_t samples_per_pixel=10, uint16_t bounce_limit=4) :
         focal_length_{focal_length},
         frame_{},
+        m_waveform{nullptr},
         size_{sensor_size},
         origin_{origin},
         center_pixel{},
@@ -64,14 +66,31 @@ public:
         return vec3(random_double() - 0.5, random_double() - 0.5, 0);
     }
 
-    bool render(const hittable& world) {
+    bool render(world hit_world) {
+        delete [] m_waveform;
+        size_t samples = ceil(frame_.sample_rate*frame_.max_range/hit_world.speed_of_sound());
+        m_waveform = new double[samples];
+        for (size_t i=0; i < samples; i++) {
+            m_waveform[i] = 0.0;
+        }
+
         if (initialize()) {
             for (int j = 0; j < frame_.h; j++) {
                 for (int i = 0; i < frame_.w; i++) {
                     color4<double> p_color{0, 0, 0};
                     for (uint8_t sample = 0; sample < aa_samples; sample++){
                         auto r = get_ray(i, j);
-                        p_color += ray_color(r, bounces, world);
+                        auto record = cast(r, bounces, hit_world);
+                        p_color += record.color;
+                        
+                        // Render waveform
+                        size_t pulse_dur = hit_world.pulse_samples(frame_.sample_rate);
+                        size_t sample_start = record.distance_traveled*2 * frame_.sample_rate;
+
+                        for(size_t idx=sample_start; idx < sample_start + pulse_dur; idx++) {
+                            m_waveform[idx] += record.amplitude * sin(2*PI*hit_world.pulse_frequency()/frame_.sample_rate * idx);
+                        }
+
                     }
                     frame_.pixels[j*frame_.w + i] = quantize(p_color/aa_samples);
                 }
@@ -84,34 +103,55 @@ public:
 private:
     bool initialize() {
         if (frame_.pixels == nullptr) {
-            std::cout << "[DEBUG] Error: Frame buffer is nullptr\n";
+            std::cerr << "[DEBUG] Error: Frame buffer is nullptr\n";
+            return false;
+        } else if (m_waveform == nullptr) {
+            std::cerr << "[DEBUG] Error: waveform buffer is nullptr\n";
             return false;
         }
 
         return true;
     }
 
-
-    color4<double> ray_color(const ray& r, uint16_t depth, const hittable& world) const {
-        if (depth <= 0) {
-            return promote({0, 0, 0});
-        }
-
+    hit_record cast(const ray& source_ray, uint16_t depth, const world& environment) const {
         hit_record rec;
-        
-        if (world.hit(r, interval(0, infinity), rec)) {
-            auto direction = random_on_hemisphere(rec.normal);
-            return 0.5 * ray_color(ray(rec.p, direction), depth-1, world);
+        auto r = source_ray;
+        for (; depth > 0; depth--) {
+            
+            if (environment.hittable_world().hit(r, interval(0, infinity), rec, environment.speed_of_sound())) {
+                r = ray(rec.p, random_on_hemisphere(rec.normal));
+                // Still need to accumulate distance and correctly calculate frequency shift
+            } else {
+                vec3 unit_direction = unit_vector(r.direction());
+                auto a = 0.5*(unit_direction.y() + 1.0);
+                rec.color = promote((1.0-a)*color3<double>{1.0, 1.0, 1.0} + a*color3<double>{0.5, 0.7, 1.0});
+                break;
+            }
         }
-        
-        vec3 unit_direction = unit_vector(r.direction());
-        auto a = 0.5*(unit_direction.y() + 1.0);
-        return promote((1.0-a)*color3<double>{1.0, 1.0, 1.0} + a*color3<double>{0.5, 0.7, 1.0});
+        return rec;
     }
+
+    // color4<double> ray_color(const ray& r, uint16_t depth, const hittable& world) const {
+    //     if (depth <= 0) {
+    //         return promote({0, 0, 0});
+    //     }
+
+    //     hit_record rec;
+        
+    //     if (world.hit(r, interval(0, infinity), rec)) {
+    //         auto direction = random_on_hemisphere(rec.normal);
+    //         return 0.5 * ray_color(ray(rec.p, direction), depth-1, world);
+    //     }
+        
+    //     vec3 unit_direction = unit_vector(r.direction());
+    //     auto a = 0.5*(unit_direction.y() + 1.0);
+    //     return promote((1.0-a)*color3<double>{1.0, 1.0, 1.0} + a*color3<double>{0.5, 0.7, 1.0});
+    // }
 
 
     double focal_length_;
     frame_t frame_;
+    double* m_waveform;
     double size_;
     point3 origin_;
     point3 center_pixel;

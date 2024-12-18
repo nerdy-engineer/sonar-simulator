@@ -18,7 +18,7 @@ public:
 
     }
 
-    bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
+    bool hit(const ray& r, interval ray_t, hit_record& rec, double sos) const override {
         vec3 oc = m_center - r.origin();
         auto a = r.direction().length_squared();
         auto h = dot(r.direction(), oc);
@@ -42,6 +42,14 @@ public:
         rec.p = r.at(rec.t);
         vec3 outward_normal = (rec.p - m_center) / m_radius;
         rec.set_face_normal(r, outward_normal);
+        rec.distance_traveled += root;
+        rec.color *= promote(m_color);
+        rec.amplitude *= m_absorbtion;
+        rec.f_factor *= 1.0; // 1.0 For stationary targets
+        
+        // auto vel = dot(r, motion_vector);
+        // rec.f_factor *= sos/(sos+vel);
+
 
         return true;
     }
@@ -50,6 +58,8 @@ public:
 private:
     point3 m_center;
     double m_radius;
+    color3<double> m_color;
+    double m_absorbtion;
 
 };
 
