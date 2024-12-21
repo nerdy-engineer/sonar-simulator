@@ -11,7 +11,7 @@
 - Carries transform information (translation, orientation, scale)
 
 ## Illumination Source
-- [Entity](#entities) with radiation pattern.
+- [Entity](#entities) with radiation pattern and intensity.
 
 ## Observers
 - [Entity](#entities) with a sensitivity pattern.

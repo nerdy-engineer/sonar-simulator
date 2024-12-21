@@ -36,14 +36,14 @@ project (workspaceName)
 
     vpaths 
     {
-        ["Header Files/*"] = { "include/**.h",  "include/**.hpp", "src/**.h", "src/**.hpp", "**.h", "**.hpp"},
+        ["Header Files/*"] = { "inc/**.h",  "inc/**.hpp", "src/**.h", "src/**.hpp", "**.h", "**.hpp"},
         ["Source Files/*"] = {"src/**.c", "src/**.cpp","**.c", "**.cpp"},
     }
     files {"**.c", "**.cpp", "**.h", "**.hpp"}
 
     includedirs { "./" }
     includedirs { "src" }
-    includedirs { "include" }
+    includedirs { "inc" }
 
     link_raylib()
 

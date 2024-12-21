@@ -6,36 +6,51 @@
     "objects": [
         {
             "geometry": "sphere",
-            "position": [0, 0, -1],
-            "orientation": {
-                "up": [0, 0, 1],
-                "direction": [0, 1, 0]
+            "transform": {
+                "position": [0, 0, -1],
+                "orientation": {
+                    "up": [0, 0, 1],
+                    "direction": [0, 1, 0]
+                },
+                "scale": [1, 1, 1]
             },
-            "scale": [1, 1, 1]
+            "material": {
+                "albedo": [0.29, 0.757, 0.969],
+                "absorbption": 0.88
+            }
         },
         {
             "geometry": "plane",
-            "position": [0, 0, 0],
-            "orientation": {
-                "up": [0, 0, 1],
-                "direction": [0, 1, 0]
+            "transform": {
+                "position": [0, 0, 0],
+                "orientation": {
+                    "up": [0, 0, 1],
+                    "direction": [0, 1, 0]
+                },
+                "scale": [1, 1, 1]
             },
-            "scale": [1, 1, 1]
+            "material": {
+                "albedo": [0.741, 0.690, 0.525],
+                "absorbption": 0.88
+            }
         }
     ],
     "illumination sources": [
         {
             "geometry": "disk",
-            "position": [2, 0.75, 0.5],
-            "orientation": {
-                "up": [-2, -0.75, 0],
-                "direction": [0, 0, 1]
+            "transform": {
+                "position": [2, 0.75, 0.5],
+                "orientation": {
+                    "up": [-2, -0.75, 0],
+                    "direction": [0, 0, 1]
+                },
+                "scale": [0.012, 0.012, 0]
             },
-            "scale": [0.012, 0.012, 0],
             "radiation pattern": {
                 "shape": "cardioid",
                 "parameters": [1]
-            }
+            },
+            "intensity": 1.5
         }
     ]
 }
