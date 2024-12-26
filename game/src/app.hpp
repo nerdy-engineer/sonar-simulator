@@ -5,8 +5,11 @@
 #include "raylib.h"
 #include <utility>
 #include <string>
+#include "previewer.hpp"
 #include "raytracer.hpp"
+#include "scene.hpp"
 #include "world.hpp"
+#include "factories.hpp"
 #include "primitives.hpp"
 #include "vec3.hpp"
 #include <exception>
@@ -27,7 +30,8 @@ public:
         app_state_{State::PREVIEW},
         window_size_{window_size},
         pixels{nullptr},
-        m_world{},
+        m_scene{render::scene_factory("resources\\scene.json")},
+        m_previewer{m_scene},
         render_engine{{window_size.first, window_size.second, 1e6, 18, (render::color4<uint8_t>*)pixels}},
         img_{},
         tex_{}
@@ -36,15 +40,21 @@ public:
         resize(window_size_);
         for (uint32_t i = 0; i < img_.width * img_.height; i++) { pixels[i] = {255, 255, 255, 255}; }
         tex_ = LoadTextureFromImage(img_);
-        
-        m_world.add(std::make_shared<render::primitives::sphere>(render::point3(0, 0, -1), 0.5));
-        m_world.add(std::make_shared<render::primitives::sphere>(render::point3(0, -100.5, -1), 100));
+
+
+        m_previewer.setup_camera();
+
+        // m_world.add(std::make_shared<render::primitives::sphere>(render::point3(0, 0, -1), 0.5));
+        // m_world.add(std::make_shared<render::primitives::sphere>(render::point3(0, -100.5, -1), 100));
 
         render_engine.add_world(std::make_shared<world>(m_world));
     }
 
     void state(State new_state) {
-        app_state_ = new_state;
+        if (new_state != app_state_) {
+            app_state_ = new_state;
+            // Trigger state change handler?
+        }
     }
 
     bool app_should_close() {
@@ -76,12 +86,28 @@ public:
 		EndDrawing();
     }
 
+    void process_input() {
+        if (IsKeyDown(KEY_F7)) {
+            // Configure mode
+            state(State::CONFIGURE);
+        } else if (IsKeyDown(KEY_F8)) {
+            // Preview Mode
+            state(State::PREVIEW);
+        } else if (IsKeyDown(KEY_F9)) {
+            // Render Mode
+            state(State::RENDER);
+        }
+    }
+
     void loading() {
 		ClearBackground(BLACK);
     }
 
     void preview() {
         ClearBackground(BLACK);
+        // preview should use the raylib opengl stuff
+        m_previewer.draw();
+
     }
 
     void render() {
@@ -126,10 +152,12 @@ private:
     State app_state_;
     std::pair<int, int> window_size_;
     Color *pixels;
+    // world m_world;
+    render::Scene m_scene;
+    Previewer m_previewer;
     render::Raytracer render_engine;
     Image img_;
     Texture2D tex_;
-    world m_world;
 
 
 

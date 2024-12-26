@@ -6,25 +6,30 @@
 #include "entity.hpp"
 #include "transform.hpp"
 #include "geometry.hpp"
+#include "material.hpp"
 
+namespace render {
 
 class Object : public Entity {
 public:
-    Object(std::shared_ptr<Geometry> geometry, Transform transform, const Material& material) :
+    Object(Geometry& geometry, Transform transform) :
         Entity(transform),
-        m_geometry{geometry},
-        m_material{material}
+        m_geometry{std::make_shared<Geometry>(geometry)}
     {
 
     }
 
+    GeometryType shape() const { return m_geometry->shape(); }
+    std::shared_ptr<const Geometry> geometry() const { return m_geometry; }
+    // RenderMaterial material() const { return m_material; }
 
 private:
+
     std::shared_ptr<Geometry> m_geometry;
-    Material m_material;
 
 
 };
 
+}
 
 #endif // OBJECTS_HPP

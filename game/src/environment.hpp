@@ -4,7 +4,7 @@
 
 class Environment {
 public:
-    Environment(double speed_of_sound, double medium_density) :
+    Environment(double speed_of_sound=343.0, double medium_density=1.225) :
         m_speed_of_sound{speed_of_sound},
         m_density{medium_density}
     {

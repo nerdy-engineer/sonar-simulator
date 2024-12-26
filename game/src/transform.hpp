@@ -4,12 +4,13 @@
 
 #include "vec3.hpp"
 
+namespace render {
 class Transform {
 public:
-    Transform(const render::vec3& location,
-              const render::vec3& up,
-              const render::vec3& direction,
-              const render::vec3& scale) :
+    Transform(const vec3& location,
+              const vec3& up,
+              const vec3& direction,
+              const vec3& scale) :
         m_location{location},
         m_up{up},
         m_direction{direction},
@@ -18,12 +19,19 @@ public:
 
     }
 
+    vec3 position() const { return m_location; }
+    vec3 up() const { return m_up; }
+    vec3 direction() const { return m_direction; }
+    vec3 scale() const { return m_scale; }
+
 private:
-    render::vec3 m_location;
-    render::vec3 m_up;
-    render::vec3 m_direction;
-    render::vec3 m_scale;
+    vec3 m_location;
+    vec3 m_up;
+    vec3 m_direction;
+    vec3 m_scale;
 
 };
+
+}
 
 #endif // TRANSFORM_HPP

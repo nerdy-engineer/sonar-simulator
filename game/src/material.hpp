@@ -5,9 +5,9 @@
 #include "color.hpp"
 
 
-class Material {
+class RenderMaterial {
 public:
-    Material(const render::color3<double>& albedo, double absorbption) :
+    RenderMaterial(const render::color3<double>& albedo, double absorbption) :
         m_albedo{albedo},
         m_absorbption{absorbption}
     {

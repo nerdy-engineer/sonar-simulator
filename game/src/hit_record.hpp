@@ -3,6 +3,7 @@
 #define HIT_RECORD_HPP
 
 #include "utilities.hpp"
+#include "renderer_utils.hpp"
 
 namespace render {
 

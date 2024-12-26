@@ -66,7 +66,7 @@ public:
         return vec3(random_double() - 0.5, random_double() - 0.5, 0);
     }
 
-    bool render(world hit_world) {
+    bool render(Scene hit_world) {
         delete [] m_waveform;
         size_t samples = ceil(frame_.sample_rate*frame_.max_range/hit_world.speed_of_sound());
         m_waveform = new double[samples];
@@ -113,12 +113,12 @@ private:
         return true;
     }
 
-    hit_record cast(const ray& source_ray, uint16_t depth, const world& environment) const {
+    hit_record cast(const ray& source_ray, uint16_t depth, const Scene& scene) const {
         hit_record rec;
         auto r = source_ray;
         for (; depth > 0; depth--) {
             
-            if (environment.hittable_world().hit(r, interval(0, infinity), rec, environment.speed_of_sound())) {
+            if (scene.hittable_world().hit(r, interval(0, infinity), rec, scene.environment().speed_of_sound())) {
                 r = ray(rec.p, random_on_hemisphere(rec.normal));
                 // Still need to accumulate distance and correctly calculate frequency shift
             } else {

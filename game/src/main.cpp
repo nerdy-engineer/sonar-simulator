@@ -35,6 +35,7 @@ int main ()
 	while (!manager.app_should_close())
 	{
 		// game loop
+		manager.process_input();
 		manager.draw();
 	}
 

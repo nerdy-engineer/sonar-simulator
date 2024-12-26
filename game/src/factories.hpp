@@ -3,7 +3,6 @@
 #define FACTORIES_HPP
 
 #include <inc/picojson/picojson.h>
-#include <fstream>
 #include <memory>
 
 #include "vec3.hpp"
@@ -15,15 +14,7 @@
 #include "geometry.hpp"
 
 
-Scene scene_factory(const std::string& json_filepath){
-    std::string jsonString = "";
-    std::ifstream jsonFile(json_filepath, std::ios_base::in);
-    jsonFile.read(&jsonString[0], jsonFile.tellg());
-    picojson::value json;
-    picojson::parse(json, jsonString);
-    auto root = json.get<picojson::object>();
-    return {environment_factory(root["environment"]), objects_factory(root["objects"])};
-}
+namespace render {
 
 Environment environment_factory(const picojson::value& json) {
     if (json.is<picojson::object>()) {
@@ -42,7 +33,7 @@ Environment environment_factory(const picojson::value& json) {
     }
 }
 
-render::vec3 vector_factory(const picojson::value& json) {
+vec3 vector_factory(const picojson::value& json) {
     if (json.is<picojson::array>()) {
         // It should be an length 3 array of doubles, so let's make sure
         auto root = json.get<picojson::array>();
@@ -62,7 +53,7 @@ render::vec3 vector_factory(const picojson::value& json) {
     }
 }
 
-render::color3<double> color_factory(const picojson::value& json) {
+color3<double> color_factory(const picojson::value& json) {
     if (json.is<picojson::array>()) {
         // It should be an length 3 array of doubles, so let's make sure
         auto root = json.get<picojson::array>();
@@ -97,13 +88,13 @@ Transform transform_factory(const picojson::value& json) {
 }
 
 
-Material material_factory(const picojson::value& json) {
+RenderMaterial material_factory(const picojson::value& json) {
     if (json.is<picojson::object>()) {
         auto root = json.get<picojson::object>();
         auto albedo = color_factory(root["albedo"]);
         auto absorbption = root["absorbption"].get<double>();
 
-        return Material(albedo, absorbption);
+        return RenderMaterial(albedo, absorbption);
     } else {
         // an invalid json object was passed in
     }
@@ -111,15 +102,18 @@ Material material_factory(const picojson::value& json) {
 
 
 
-std::shared_ptr<Geometry> geometry_factory(const picojson::value& json) {
+Geometry& geometry_factory(const picojson::value& json, RenderMaterial& material) {
     if (json.is<std::string>()) {
         auto type = json.get<std::string>();
         if (type == "sphere") {
-            return std::make_shared<Geometry>(Sphere(0.5));
+            auto r = Sphere{1};
+            return r;
         } else if (type == "plane") {
-            return std::make_shared<Geometry>(Plane());
+            auto r = Plane{};
+            return r;
         } else if (type == "disc") {
-            return std::make_shared<Geometry>(Disc(0.5));
+            auto r = Disc(1);
+            return r;
         } else {
             // Bad geometry type
         }
@@ -135,12 +129,11 @@ std::shared_ptr<Geometry> geometry_factory(const picojson::value& json) {
 Object object_factory(const picojson::value& json) {
     if (json.is<picojson::object>()) {
         auto root = json.get<picojson::object>();
-        std::shared_ptr<Geometry> geometry = geometry_factory(root["geometry"]);
+        RenderMaterial material = material_factory(root["material"]);
+        Geometry& geometry = geometry_factory(root["geometry"], material);
         Transform transform = transform_factory(root["transform"]);
-        Material material = material_factory(root["material"]);
         // TODO: Object is not yet implemented, need to define what an object is before we can create one.
-
-        return Object(geometry, transform, material);
+        return Object(geometry, transform);
 
     } else {
         // an invalid json object was passed in
@@ -161,5 +154,6 @@ std::vector<std::shared_ptr<Object>> objects_factory(const picojson::value& json
 }
 
 
+}
 
 #endif // FACTORIES_HPP

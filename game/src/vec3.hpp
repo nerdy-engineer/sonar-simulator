@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <iostream>
+#include "utilities.hpp"
 
 using std::sqrt;
 
