@@ -5,13 +5,6 @@
 #include "raylib.h"
 #include <utility>
 #include <string>
-#include "previewer.hpp"
-#include "raytracer.hpp"
-#include "scene.hpp"
-#include "world.hpp"
-#include "factories.hpp"
-#include "primitives.hpp"
-#include "vec3.hpp"
 #include <exception>
 #include <stdint.h>
 #include <iostream>
@@ -30,9 +23,6 @@ public:
         app_state_{State::PREVIEW},
         window_size_{window_size},
         pixels{nullptr},
-        m_scene{render::scene_factory("resources\\scene.json")},
-        m_previewer{m_scene},
-        render_engine{{window_size.first, window_size.second, 1e6, 18, (render::color4<uint8_t>*)pixels}},
         img_{},
         tex_{}
     {
@@ -41,13 +31,6 @@ public:
         for (uint32_t i = 0; i < img_.width * img_.height; i++) { pixels[i] = {255, 255, 255, 255}; }
         tex_ = LoadTextureFromImage(img_);
 
-
-        m_previewer.setup_camera();
-
-        // m_world.add(std::make_shared<render::primitives::sphere>(render::point3(0, 0, -1), 0.5));
-        // m_world.add(std::make_shared<render::primitives::sphere>(render::point3(0, -100.5, -1), 100));
-
-        render_engine.add_world(std::make_shared<world>(m_world));
     }
 
     void state(State new_state) {
@@ -106,13 +89,11 @@ public:
     void preview() {
         ClearBackground(BLACK);
         // preview should use the raylib opengl stuff
-        m_previewer.draw();
 
     }
 
     void render() {
         ClearBackground(BLACK);
-        render_engine.render();
         
         UpdateTexture(tex_, img_.data);
         
@@ -133,8 +114,7 @@ public:
             // This is a problem...
             throw std::exception();
         }
-        frame_t frame = {window_size.first, window_size.second, 1e6, 18, (render::color4<uint8_t>*)pixels};
-        render_engine.resize(frame);
+        // frame_t frame = {window_size.first, window_size.second, 1e6, 18, (render::color4<uint8_t>*)pixels};
         img_.data = pixels;
         img_.width = window_size.first;
         img_.height = window_size.second;
@@ -152,10 +132,6 @@ private:
     State app_state_;
     std::pair<int, int> window_size_;
     Color *pixels;
-    // world m_world;
-    render::Scene m_scene;
-    Previewer m_previewer;
-    render::Raytracer render_engine;
     Image img_;
     Texture2D tex_;
 

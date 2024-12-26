@@ -42,8 +42,10 @@ project (workspaceName)
     files {"**.c", "**.cpp", "**.h", "**.hpp"}
 
     includedirs { "./" }
-    includedirs { "src" }
+    includedirs { "lib/eigen/Eigen" }
+    includedirs { "lib/picojson" }
     includedirs { "inc" }
+    includedirs { "src" }
 
     link_raylib()
 
