@@ -34,17 +34,8 @@ project (workspaceName)
             entrypoint "mainCRTStartup"
     filter {}
 
-    vpaths 
-    {
-        ["Header Files/*"] = { "inc/**.h",  "inc/**.hpp", "src/**.h", "src/**.hpp", "**.h", "**.hpp"},
-        ["Source Files/*"] = {"src/**.c", "src/**.cpp","**.c", "**.cpp"},
-    }
-    files {"**.c", "**.cpp", "**.h", "**.hpp"}
-
     includedirs { "./" }
-    includedirs { "inc" }
-    includedirs { "src" }
-
-    link_raylib()
+    includedirs { "lib/eigen/Eigen" }
+    includedirs { "lib/picojson" }
 
 -- To link to a lib use link_to("LIB_FOLDER_NAME")

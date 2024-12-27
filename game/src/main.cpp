@@ -30,12 +30,13 @@ For a C++ project simply rename the file to .cpp and run premake
 
 int main ()
 {
-	App manager{{1280, 800}, "Hello Raylib"};
+	App manager{{1280, 800}, 60, "Hello Raylib"};
 	
 	while (!manager.app_should_close())
 	{
 		// game loop
 		manager.process_input();
+		manager.update();
 		manager.draw();
 	}
 

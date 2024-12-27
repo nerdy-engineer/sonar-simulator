@@ -3,11 +3,17 @@
 #define APP_HPP
 
 #include "raylib.h"
+#include "raymath.h"
 #include <utility>
 #include <string>
 #include <exception>
 #include <stdint.h>
 #include <iostream>
+#include <memory>
+#include "ui_constants.hpp"
+#include "configuration_mode.hpp"
+#include "scene.hpp"
+#include "object.hpp"
 
 
 class App {
@@ -19,18 +25,30 @@ public:
         LOADING
     };
 
-    App(std::pair<int, int> window_size, std::string window_caption) :
-        app_state_{State::PREVIEW},
+    App(std::pair<int, int> window_size, int fps, std::string window_caption) :
+        app_state_{State::CONFIGURE},
         window_size_{window_size},
         pixels{nullptr},
         img_{},
-        tex_{}
+        tex_{},
+        m_scene{std::make_shared<render::Scene>()},
+        m_configurator{m_scene}
+        // m_camera{0}
     {
         InitWindow(window_size_.first, window_size_.second, window_caption.c_str());
         resize(window_size_);
         for (uint32_t i = 0; i < img_.width * img_.height; i++) { pixels[i] = {255, 255, 255, 255}; }
         tex_ = LoadTextureFromImage(img_);
+        DisableCursor();
+        SetTargetFPS(fps);
+        // m_scene->add(Sphere({0, 0, 0}, {1, 1, 1}, {1, 0, 0, 0}));
+        m_scene->add(Cube({0, 0.5, 0}, {1, 1, 1}, QuaternionFromAxisAngle({1, 0, 0}, PI/4)));
 
+        // m_camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };
+        // m_camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
+        // m_camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+        // m_camera.fovy = 45.0f;
+        // m_camera.projection = CAMERA_PERSPECTIVE;
     }
 
     void state(State new_state) {
@@ -44,28 +62,29 @@ public:
         return WindowShouldClose();
     }
 
+    void update() {
+        m_configurator.update();
+    }
+
     void draw() {
         BeginDrawing();
-
+        ClearBackground(WHITE);
 		switch (app_state_) {
             case State::CONFIGURE:
-                configure();
+                m_configurator.draw();
+                DrawText("Configuration", ui::BORDER_SPACING, ui::BORDER_SPACING, ui::TEXT_ROW_HEIGHT, BLACK);                
                 break;
             case State::LOADING:
-                loading();
-                DrawText("Loading...", 200,200,20,WHITE);
+                DrawText("Loading", ui::BORDER_SPACING, ui::BORDER_SPACING, ui::TEXT_ROW_HEIGHT, BLACK);
                 break;
             case State::PREVIEW:
-                loading();
-                DrawText("Preview...", 200,200,20,WHITE);
+                DrawText("Preview", ui::BORDER_SPACING, ui::BORDER_SPACING, ui::TEXT_ROW_HEIGHT, BLACK);
                 break;
             case State::RENDER:
-                render();
-                DrawText("Render...", 20, 20, 20, WHITE);
-                DrawFPS(20, 45);
+                DrawText("Render", ui::BORDER_SPACING, ui::BORDER_SPACING, ui::TEXT_ROW_HEIGHT, BLACK);
                 break;
         }
-		
+		DrawFPS(ui::BORDER_SPACING, ui::BORDER_SPACING + ui::TEXT_ROW_HEIGHT);
 		EndDrawing();
     }
 
@@ -80,30 +99,6 @@ public:
             // Render Mode
             state(State::RENDER);
         }
-    }
-
-    void loading() {
-		ClearBackground(BLACK);
-    }
-
-    void preview() {
-        ClearBackground(BLACK);
-        // preview should use the raylib opengl stuff
-
-    }
-
-    void render() {
-        ClearBackground(BLACK);
-        
-        UpdateTexture(tex_, img_.data);
-        
-        DrawTexture(tex_, 0, 0, {255, 255, 255, 255});
-        
-    }
-
-    void configure() {
-        ClearBackground(GRAY);
-        DrawText("Configure...", 200,200,20,WHITE);
     }
 
     void resize(std::pair<int, int> window_size) {
@@ -134,6 +129,9 @@ private:
     Color *pixels;
     Image img_;
     Texture2D tex_;
+    std::shared_ptr<render::Scene> m_scene;
+    ConfigurationMode m_configurator;
+    // Camera3D m_camera;
 
 
 
