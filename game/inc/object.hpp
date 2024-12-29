@@ -5,14 +5,17 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "transform.hpp"
+#include "material.hpp"
+
 
 class Object {
 public:
-    Object(const Model& geometry, render::Transform transform={{0, 0, 0,}, {1, 0, 0, 0}, {1, 1, 1}}) :
+    Object(const Model& geometry, render::Transform transform={{0, 0, 0,}, {1, 0, 0, 0}, {1, 1, 1}}, render::Material material={{200, 200, 200, 255}, 1.0}) :
         m_model{geometry},
-        m_transform{transform}
+        m_transform{transform},
+        m_material{material}
     {
-        Image solid = GenImageColor(2, 2, GRAY);
+        Image solid = GenImageColor(1, 1, m_material.albedo);
         Texture2D texture = LoadTextureFromImage(solid);
         UnloadImage(solid);
         m_model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
@@ -21,6 +24,7 @@ public:
     void display() const {
         auto obj = transform(m_transform);
         DrawModel(obj, {0, 0, 0}, 1, WHITE);
+        DrawModelWires(obj, {0, 0, 0}, 1, LIGHTGRAY);
     }
 
     /**
@@ -46,14 +50,15 @@ public:
 protected:
     Model m_model;
     render::Transform m_transform;
+    render::Material m_material;
 
 };
 
 
 class Cube : public Object {
 public:
-    Cube(Vector3 position, Vector3 scale, Quaternion rotation) :
-        Object(LoadModelFromMesh(GenMeshCube(scale.x, scale.z, scale.y)), Transform{position, rotation, {1, 1, 1}})
+    Cube(Vector3 position, Vector3 scale, Quaternion rotation, render::Material material) :
+        Object(LoadModelFromMesh(GenMeshCube(scale.x, scale.z, scale.y)), Transform{position, rotation, {1, 1, 1}}, material)
     {
 
     }
@@ -64,8 +69,8 @@ public:
 
 class Sphere : public Object {
 public:
-    Sphere(Vector3 position, Vector3 scale, Quaternion rotation) :
-        Object(LoadModelFromMesh(GenMeshSphere(1, 24, 24)), Transform{position, rotation, scale})
+    Sphere(Vector3 position, Vector3 scale, Quaternion rotation,render::Material material) :
+        Object(LoadModelFromMesh(GenMeshSphere(1, 24, 24)), Transform{position, rotation, scale}, material)
     {   
     }
 
@@ -74,8 +79,8 @@ public:
 
 class Plane : public Object {
 public:
-    Plane(Vector3 position, Vector3 scale, Quaternion rotation) :
-        Object(LoadModelFromMesh(GenMeshPlane(scale.x, scale.y, 1, 1)), Transform{position, rotation, scale})
+    Plane(Vector3 position, Vector3 scale, Quaternion rotation, render::Material material) :
+        Object(LoadModelFromMesh(GenMeshPlane(scale.x, scale.y, 1, 1)), Transform{position, rotation, scale}, material)
     {
 
     }
@@ -83,8 +88,8 @@ public:
 
 class Disc : public Object {
 public:
-    Disc(Vector3 position, Vector3 scale, Quaternion rotation) :
-        Object(LoadModelFromMesh(GenMeshPoly(24, 1)), Transform{position, rotation, scale})
+    Disc(Vector3 position, Vector3 scale, Quaternion rotation, render::Material material) :
+        Object(LoadModelFromMesh(GenMeshPoly(24, 1)), Transform{position, rotation, scale}, material)
     {
 
     }

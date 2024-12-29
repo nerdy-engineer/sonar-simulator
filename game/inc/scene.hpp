@@ -18,6 +18,7 @@ public:
 
     std::vector<Object> objects() { return m_objects; }
     void add(Object obj) { m_objects.push_back(obj); }
+    void clear() { m_objects.clear(); }
 
 private:
     std::vector<Object> m_objects;

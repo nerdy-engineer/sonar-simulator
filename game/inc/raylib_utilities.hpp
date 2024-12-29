@@ -5,6 +5,7 @@
 #include "raylib.h"
 #include "rlgl.h"
 
+
 #define RAYLIB_NEW_RLGL
 
 static void DrawTextCodepoint3D(Font font, int codepoint, Vector3 position, float fontSize, bool backface, Color tint)

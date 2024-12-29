@@ -42,7 +42,7 @@ public:
         DisableCursor();
         SetTargetFPS(fps);
         // m_scene->add(Sphere({0, 0, 0}, {1, 1, 1}, {1, 0, 0, 0}));
-        m_scene->add(Cube({0, 0.5, 0}, {1, 1, 1}, QuaternionFromAxisAngle({1, 0, 0}, PI/4)));
+        m_scene->add(Cube({0, 0.5, 0}, {1, 1, 1}, QuaternionFromAxisAngle({1, 0, 0}, PI/4), {{127, 127, 127, 255}, 0.99}));
 
         // m_camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };
         // m_camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };

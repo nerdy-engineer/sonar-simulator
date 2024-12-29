@@ -4,13 +4,16 @@
 
 #include "app_mode.hpp"
 #include "raylib_utilities.hpp"
+#include <random>
 #include <string>
 
 class ConfigurationMode : public app::AppModeBase {
 public:
     ConfigurationMode(std::shared_ptr<render::Scene> scene):
         app::AppModeBase(scene),
-        m_cam{0}
+        m_cam{0},
+        m_rd{},
+        m_random{m_rd()}
     {
         setup_camera();
     }
@@ -31,6 +34,9 @@ public:
     void update() override {
         UpdateCamera(&m_cam, CAMERA_FIRST_PERSON);
         m_cam.up = (Vector3){0, 1, 0};
+        if (IsKeyPressed(KEY_BACKSPACE)) {
+            random_scene();
+        }
     }
 
     void draw() override {
@@ -47,17 +53,7 @@ public:
                 object.display();
             }
 
-            DrawGrid(1000, 1.0);
-            // rlPushMatrix();
-            //     rlRotatef(90, 1, 0, 0);
-            //     // rlTranslatef(0, 0, ui::TEXT_ROW_HEIGHT*2);
-            //     DrawText3D(GetFontDefault(), "+X", {100, 0, -2}, ui::TEXT_ROW_HEIGHT, 1, ui::TEXT_ROW_HEIGHT, true, BLACK);
-            //     DrawText3D(GetFontDefault(), "-X", {-100, 0, -2}, ui::TEXT_ROW_HEIGHT, 1, ui::TEXT_ROW_HEIGHT, true, BLACK);
-            //     DrawText3D(GetFontDefault(), "+Y", {0, 100, -2}, ui::TEXT_ROW_HEIGHT, 1, ui::TEXT_ROW_HEIGHT, true, BLACK);
-            //     DrawText3D(GetFontDefault(), "-Y", {0, -100, -2}, ui::TEXT_ROW_HEIGHT, 1, ui::TEXT_ROW_HEIGHT, true, BLACK);
-            //     DrawText3D(GetFontDefault(), "+Z", {0, 0, 100}, ui::TEXT_ROW_HEIGHT, 1, ui::TEXT_ROW_HEIGHT, true, BLACK);
-            //     DrawText3D(GetFontDefault(), "-Z", {0, 0, -100}, ui::TEXT_ROW_HEIGHT, 1, ui::TEXT_ROW_HEIGHT, true, BLACK);
-            // rlPopMatrix();
+            DrawGrid(50, 1.0);
             DrawRay(Ray({0, 0, 0}, {1, 0, 0}), RED);    // X
             DrawRay(Ray({0, 0, 0}, {0, 1, 0}), GREEN);  // Y
             DrawRay(Ray({0, 0, 0}, {0, 0, 1}), BLUE);   // Z
@@ -67,8 +63,67 @@ public:
 
     }
 
+    void random_scene() {
+        m_scene->clear();
+        std::uniform_int_distribution<int> random_integer_generator(0, 1);
+        std::uniform_int_distribution<uint8_t> random_color_val_generator(0, 255);
+        std::uniform_real_distribution<double> random_double_genenerator(0.05, 1);
+        // Add random objects in random places
+        for (int i=0; i < 8; i++) {
+            auto type = random_integer_generator(m_random);
+            auto location = render::Vector3{
+                random_double_genenerator(m_random) * 20 - 10,
+                random_double_genenerator(m_random) * 20,
+                random_double_genenerator(m_random) * 20 - 10
+            };
+            auto scale = render::Vector3{
+                random_double_genenerator(m_random) * 5,
+                random_double_genenerator(m_random) * 5,
+                random_double_genenerator(m_random) * 5
+            };
+            auto rotation = QuaternionFromAxisAngle(
+                {
+                    random_double_genenerator(m_random),
+                    random_double_genenerator(m_random),
+                    random_double_genenerator(m_random)
+                },
+                random_double_genenerator(m_random) * PI);
+            switch (type) {
+                case 0:
+                    m_scene->add(Cube(location,
+                                    scale,
+                                    rotation,
+                                    render::Material{
+                                        {random_color_val_generator(m_random),
+                                         random_color_val_generator(m_random),
+                                         random_color_val_generator(m_random),
+                                         255},
+                                         random_double_genenerator(m_random)
+                                    }));
+                    break;
+                case 1:
+                    m_scene->add(Sphere(location,
+                                      scale,
+                                      rotation,
+                                      render::Material{
+                                        {random_color_val_generator(m_random),
+                                         random_color_val_generator(m_random),
+                                         random_color_val_generator(m_random),
+                                         255},
+                                         random_double_genenerator(m_random)
+                                      }));
+                    break;
+            }
+        }
+
+
+    }
+
+
 private:
     Camera m_cam;
+    std::random_device m_rd;
+    std::mt19937 m_random;
 
 
 };
