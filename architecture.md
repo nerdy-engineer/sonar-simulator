@@ -27,6 +27,8 @@
 
 ## Ray Caster
 - Casts rays through the [scene](#scenes) and computes a hit record for a ray.
+- Path tracing:
+    - Cast ray to surface from observer, then raycast from the hit point to each of the illumination sources for direct illumination, then cast the bounces.
 
 ## Renderer
 - Uses a [ray caster](#ray-caster) to render a [scene](#scenes).

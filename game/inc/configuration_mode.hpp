@@ -6,6 +6,7 @@
 #include "raylib_utilities.hpp"
 #include <random>
 #include <string>
+#include <cmath>
 
 class ConfigurationMode : public app::AppModeBase {
 public:
@@ -29,6 +30,7 @@ public:
 
     std::string get_scene_json() const {
         // Need to return a json string
+        return {};
     }
 
     void update() override {
@@ -36,17 +38,21 @@ public:
         m_cam.up = (Vector3){0, 1, 0};
         if (IsKeyPressed(KEY_BACKSPACE)) {
             random_scene();
+        } else if (IsKeyPressed(KEY_ONE)) {
+            sphere_scene();
+        } else if (IsKeyPressed(KEY_TWO)) {
+            cube_scene();
         }
     }
 
     void draw() override {
-        // std::string debugString = "Scene is Null: ";
-        // debugString += m_scene == nullptr ? "True" : "False";
-        // DrawText(debugString.c_str(),
-        //     GetRenderWidth() - ui::BORDER_SPACING - MeasureText(debugString.c_str(), ui::TEXT_ROW_HEIGHT),
-        //     ui::TEXT_ROW_HEIGHT + ui::BORDER_SPACING,
-        //     ui::TEXT_ROW_HEIGHT,
-        //     BLACK);
+        char* s_properties = (char*)TextFormat(
+            "Speed of sound: %.3f m/s\nAtmospheric Density: %.3fkg/m^3\nAcoustic Impedance: %.3fkg/(m^2 * s)",
+            m_scene->environment().atmosphere.speed_of_sound,
+            m_scene->environment().atmosphere.density,
+            m_scene->environment().atmosphere.acoustic_impedance()
+        );
+
         BeginMode3D(m_cam);
             // // Dereferencing the scene shared pointer is causing a runtime exception
             for (const auto object : m_scene->objects()) {
@@ -60,6 +66,8 @@ public:
 
             
         EndMode3D();
+
+        DrawText(s_properties,  GetScreenWidth() - MeasureText(s_properties, ui::TEXT_ROW_HEIGHT) - ui::BORDER_SPACING, ui::BORDER_SPACING, ui::TEXT_ROW_HEIGHT, BLACK);
 
     }
 
@@ -117,6 +125,34 @@ public:
         }
 
 
+    }
+
+    void sphere_scene() {
+        m_scene->clear();
+        m_scene->add(
+            Sphere(Vector3{0, 0, 0},
+                   Vector3{0.5, 0.5, 0.5},
+                   Quaternion{1, 0, 0, 0},
+                   render::Material{
+                        {200, 200, 200, 255},
+                        700,
+                        3850
+                   })
+        );
+    }
+
+    void cube_scene() {
+        m_scene->clear();
+        m_scene->add(
+            Cube(Vector3{0, 0, 0},
+                 Vector3{1, 1, 1},
+                 Quaternion{1, 0, 0, 0},
+                 render::Material{
+                      {200, 200, 200, 255},
+                      700,
+                      3850
+                })
+        );
     }
 
 
